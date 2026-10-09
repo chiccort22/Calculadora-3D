@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Calculadora 3D">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <title>Calculadora de Costos Impresión 3D</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12 flex flex-col justify-between">
+
+    <!-- Header con botón de engrane de Configuración -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Calculadora 3D</h1>
+                    <p class="text-xs text-slate-400">Cotización rápida de impresión</p>
+                </div>
+            </div>
+
+            <!-- Botón Configuración (Engrane) -->
+            <button onclick="toggleSettingsModal()" class="p-2.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-800 text-slate-300 hover:text-white rounded-xl transition-all border border-slate-700 flex items-center gap-2 text-xs font-medium shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin-hover"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span class="hidden sm:inline">Ajustes de Costo</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Section: Formulario Simplificado y Resultados -->
+    <main class="max-w-4xl mx-auto px-4 mt-8 flex-grow w-full">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            
+            <!-- Formulario Principal (Solo Variables de la Pieza) -->
+            <div class="md:col-span-6 space-y-6">
+                
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                        Datos del Trabajo
+                    </h2>
+
+                    <!-- Peso -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Peso de la Pieza (Gramos)</label>
+                        <div class="relative">
+                            <input type="number" id="weight" value="20" min="0" step="any" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                            <span class="absolute right-3.5 top-3 text-xs font-semibold text-slate-500">g</span>
+                        </div>
+                    </div>
+
+                    <!-- Tiempo de Impresión -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Horas</label>
+                            <input type="number" id="hours" value="2" min="0" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Minutos</label>
+                            <input type="number" id="minutes" value="0" min="0" max="59" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- Multiplicador / Margen -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Factor de Venta / Margen</label>
+                        <select id="multiplier" onchange="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                            <option value="2">2x (Costo + 100% Ganancia)</option>
+                            <option value="3" selected>3x (Estándar Impresión 3D)</option>
+                            <option value="4">4x (Prototipos / Complejo)</option>
+                            <option value="custom">Margen Personalizado (%)</option>
+                        </select>
+                    </div>
+
+                    <!-- Margen Personalizado (%) -->
+                    <div id="customMarginGroup" class="hidden">
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Margen de Ganancia (%)</label>
+                        <div class="relative">
+                            <input type="number" id="customMargin" value="200" step="10" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                            <span class="absolute right-3.5 top-3 text-xs text-slate-500">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Costos Adicionales / Extras -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Costos Extras (Empaque, envío, post-procesado)</label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-2.5 text-slate-500">$</span>
+                            <input type="number" id="extraCosts" value="0" step="any" placeholder="0.00" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Panel de Resultados -->
+            <div class="md:col-span-6 space-y-6">
+                
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl sticky top-24">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-5">Resultados de Cotización</h3>
+                    
+                    <!-- Desglose Sencillo -->
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-400 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                                Material (<span id="txtKiloPrice">$300/kg</span>)
+                            </span>
+                            <span id="resMaterial" class="font-semibold">$0.00 MXN</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-400 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                Luz Electrica
+                            </span>
+                            <span id="resEnergy" class="font-semibold">$0.00 MXN</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-400 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                                Desgaste de Impresora
+                            </span>
+                            <span id="resWear" class="font-semibold">$0.00 MXN</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-400 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                Extras
+                            </span>
+                            <span id="resExtra" class="font-semibold">$0.00 MXN</span>
+                        </div>
+                        
+                        <div class="border-t border-slate-800 pt-3 mt-3 flex justify-between items-center">
+                            <span class="font-medium text-slate-200 text-sm">Costo Total de Producción</span>
+                            <span id="resTotalCost" class="text-base font-bold text-slate-100">$0.00 MXN</span>
+                        </div>
+                    </div>
+
+                    <!-- Barra Visual -->
+                    <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden flex mb-6 p-0.5 border border-slate-800">
+                        <div id="barMaterial" class="bg-indigo-500 h-full transition-all duration-300" style="width: 0%"></div>
+                        <div id="barEnergy" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
+                        <div id="barWear" class="bg-sky-500 h-full transition-all duration-300" style="width: 0%"></div>
+                        <div id="barExtra" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+
+                    <!-- Cuadro Destacado: Precio Sugerido de Venta -->
+                    <div class="bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-4 text-center mb-6">
+                        <span class="text-xs uppercase tracking-widest text-indigo-300 font-semibold block mb-1">Precio Sugerido de Venta</span>
+                        <div id="resFinalPrice" class="text-3xl font-extrabold text-indigo-400">$0.00 MXN</div>
+                        <span id="resProfit" class="text-xs text-emerald-400 font-medium block mt-1.5">Ganancia: $0.00 MXN</span>
+                    </div>
+
+                    <!-- Botón de Copiar Resumen -->
+                    <button onclick="copyQuote()" id="copyBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-xl transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        Copiar Resumen de Cotización
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal de Configuración Parámetros Fijos -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-6 transform scale-95 transition-transform duration-200" id="settingsModalContent">
+            
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <h3 class="text-base font-bold text-white">Ajustes de Parámetros Fijos</h3>
+                </div>
+                <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-400">Estos parámetros se guardan automáticamente en tu navegador y se aplicarán a todas tus cotizaciones futuras.</p>
+
+            <div class="space-y-4">
+                <!-- Costo Filamento por Kilo -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Costo Filamento / Kilo ($ MXN)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-2.5 text-slate-500">$</span>
+                        <input type="number" id="kiloCost" value="300" step="any" oninput="saveSettingsAndCalc()" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                </div>
+
+                <!-- Costo de Luz por Minuto -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Costo Luz por Minuto ($ MXN)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-2.5 text-slate-500">$</span>
+                        <input type="number" id="powerCost" value="0.00225" step="0.00001" oninput="saveSettingsAndCalc()" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                </div>
+
+                <!-- Costo Mantenimiento por Hora -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Desgaste / Mantenimiento por Hora ($ MXN)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-2.5 text-slate-500">$</span>
+                        <input type="number" id="wearCost" value="3.00" step="any" oninput="saveSettingsAndCalc()" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 flex items-center justify-between gap-3 border-t border-slate-800">
+                <button onclick="restoreDefaultSettings()" class="text-xs text-slate-400 hover:text-slate-200 underline">
+                    Valores por defecto
+                </button>
+                <button onclick="toggleSettingsModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 px-5 rounded-xl text-xs transition-colors">
+                    Listo
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript para Lógica, Manejo del Modal y LocalStorage -->
+    <script>
+        // Cargar ajustes desde LocalStorage o usar defaults
+        function loadSavedSettings() {
+            const savedKiloCost = localStorage.getItem('calc_kiloCost');
+            const savedPowerCost = localStorage.getItem('calc_powerCost');
+            const savedWearCost = localStorage.getItem('calc_wearCost');
+
+            if (savedKiloCost !== null) document.getElementById('kiloCost').value = savedKiloCost;
+            if (savedPowerCost !== null) document.getElementById('powerCost').value = savedPowerCost;
+            if (savedWearCost !== null) document.getElementById('wearCost').value = savedWearCost;
+        }
+
+        // Guardar ajustes en LocalStorage y Recalcular
+        function saveSettingsAndCalc() {
+            localStorage.setItem('calc_kiloCost', document.getElementById('kiloCost').value);
+            localStorage.setItem('calc_powerCost', document.getElementById('powerCost').value);
+            localStorage.setItem('calc_wearCost', document.getElementById('wearCost').value);
+            calculate();
+        }
+
+        // Restablecer valores por defecto
+        function restoreDefaultSettings() {
+            document.getElementById('kiloCost').value = 300;
+            document.getElementById('powerCost').value = 0.00225;
+            document.getElementById('wearCost').value = 3.00;
+            saveSettingsAndCalc();
+        }
+
+        // Abrir/Cerrar Modal de Configuración
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            const content = document.getElementById('settingsModalContent');
+            
+            if (modal.classList.contains('opacity-0')) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            } else {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+            }
+        }
+
+        // Función Principal de Cálculo
+        function calculate() {
+            const kiloCost = parseFloat(document.getElementById('kiloCost').value) || 0;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            
+            const hours = parseFloat(document.getElementById('hours').value) || 0;
+            const minutes = parseFloat(document.getElementById('minutes').value) || 0;
+            const totalMinutes = (hours * 60) + minutes;
+            const totalHours = totalMinutes / 60;
+
+            const powerCostPerMin = parseFloat(document.getElementById('powerCost').value) || 0;
+            const wearCostPerHour = parseFloat(document.getElementById('wearCost').value) || 0;
+            const extraCosts = parseFloat(document.getElementById('extraCosts').value) || 0;
+
+            const multiplierSelect = document.getElementById('multiplier').value;
+            const customMarginGroup = document.getElementById('customMarginGroup');
+
+            if (multiplierSelect === 'custom') {
+                customMarginGroup.classList.remove('hidden');
+            } else {
+                customMarginGroup.classList.add('hidden');
+            }
+
+            // Cálculos
+            const costMaterial = (kiloCost / 1000) * weight;
+            const costEnergy = totalMinutes * powerCostPerMin;
+            const costWear = totalHours * wearCostPerHour;
+            const costTotal = costMaterial + costEnergy + costWear + extraCosts;
+
+            let finalPrice = 0;
+            if (multiplierSelect === 'custom') {
+                const customMargin = parseFloat(document.getElementById('customMargin').value) || 0;
+                finalPrice = costTotal * (1 + (customMargin / 100));
+            } else {
+                const mult = parseFloat(multiplierSelect) || 1;
+                finalPrice = costTotal * mult;
+            }
+
+            const profit = finalPrice - costTotal;
+
+            // Actualizar interfaz
+            document.getElementById('txtKiloPrice').innerText = `$${kiloCost}/kg`;
+            document.getElementById('resMaterial').innerText = `$${costMaterial.toFixed(2)} MXN`;
+            document.getElementById('resEnergy').innerText = `$${costEnergy.toFixed(2)} MXN`;
+            document.getElementById('resWear').innerText = `$${costWear.toFixed(2)} MXN`;
+            document.getElementById('resExtra').innerText = `$${extraCosts.toFixed(2)} MXN`;
+            document.getElementById('resTotalCost').innerText = `$${costTotal.toFixed(2)} MXN`;
+            
+            document.getElementById('resFinalPrice').innerText = `$${finalPrice.toFixed(2)} MXN`;
+            document.getElementById('resProfit').innerText = `Ganancia estimada: $${profit.toFixed(2)} MXN`;
+
+            // Actualizar barra de proporciones
+            if (costTotal > 0) {
+                document.getElementById('barMaterial').style.width = `${(costMaterial / costTotal) * 100}%`;
+                document.getElementById('barEnergy').style.width = `${(costEnergy / costTotal) * 100}%`;
+                document.getElementById('barWear').style.width = `${(costWear / costTotal) * 100}%`;
+                document.getElementById('barExtra').style.width = `${(extraCosts / costTotal) * 100}%`;
+            } else {
+                document.getElementById('barMaterial').style.width = '0%';
+                document.getElementById('barEnergy').style.width = '0%';
+                document.getElementById('barWear').style.width = '0%';
+                document.getElementById('barExtra').style.width = '0%';
+            }
+        }
+
+        // Copiar resumen de cotización al portapapeles
+        function copyQuote() {
+            const weight = document.getElementById('weight').value;
+            const hours = document.getElementById('hours').value;
+            const mins = document.getElementById('minutes').value;
+            const totalCost = document.getElementById('resTotalCost').innerText;
+            const finalPrice = document.getElementById('resFinalPrice').innerText;
+
+            const summary = `--- COTIZACIÓN IMPRESIÓN 3D ---\n` +
+                `• Peso estimado: ${weight}g\n` +
+                `• Tiempo de impresión: ${hours}h ${mins}m\n` +
+                `• Costo de fabricación: ${totalCost}\n` +
+                `• Precio de venta sugerido: ${finalPrice}\n` +
+                `-------------------------------`;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = summary;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            const btn = document.getElementById('copyBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `✓ Copiado al Portapapeles`;
+            btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
+            btn.classList.add('bg-emerald-600');
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-emerald-600');
+                btn.classList.add('bg-indigo-600', 'hover:bg-indigo-500');
+            }, 2000);
+        }
+
+        // Inicialización
+        window.onload = function() {
+            loadSavedSettings();
+            calculate();
+        };
+    </script>
+<script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js"));</script>
+</body>
+</html>
