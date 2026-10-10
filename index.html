@@ -65,6 +65,12 @@
                         Datos del Trabajo
                     </h2>
 
+                    <!-- Filamento seleccionado -->
+                    <div>
+                        <label class="block text-xs font-medium text-[#a3a3a3] mb-1.5">Tipo de Filamento</label>
+                        <select id="filamentSelect" onchange="selectFilament()" class="w-full bg-[#090909] border border-[#303030] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#a3a3a3] transition-colors"></select>
+                    </div>
+
                     <!-- Peso -->
                     <div>
                         <label class="block text-xs font-medium text-[#a3a3a3] mb-1.5">Peso de la Pieza</label>
@@ -189,13 +195,12 @@
             <p class="text-xs text-[#a3a3a3]">Estos parámetros se guardan automáticamente en tu navegador y se aplicarán a todas tus cotizaciones futuras.</p>
 
             <div class="space-y-4">
-                <!-- Costo Filamento por Kilo -->
-                <div>
-                    <label class="block text-xs font-medium text-[#d4d4d4] mb-1">Costo Filamento / Kilo ($ MXN)</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-2.5 text-[#858585]">$</span>
-                        <input type="number" id="kiloCost" value="300" step="any" oninput="saveSettingsAndCalc()" class="w-full bg-[#090909] border border-[#303030] rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
-                    </div>
+                <!-- Catálogo de filamentos -->
+                <div class="space-y-3">
+                    <label class="block text-xs font-medium text-[#d4d4d4]">Filamentos y costo por kilo ($ MXN)</label>
+                    <div id="filamentRows" class="space-y-2"></div>
+                    <button type="button" onclick="addFilament()" class="w-full bg-[#252525] hover:bg-[#353535] border border-[#404040] rounded-xl py-2 text-xs text-white">+ Agregar filamento</button>
+                    <input type="hidden" id="kiloCost" value="300">
                 </div>
 
                 <!-- Costo de Luz por Minuto -->
@@ -232,30 +237,93 @@
     <!-- JavaScript para Lógica, Manejo del Modal y LocalStorage -->
     <script>
         // Cargar ajustes desde LocalStorage o usar defaults
+        const filamentStorageKey = 'calc_filaments_v1';
+        const filamentSelectedKey = 'calc_selectedFilament_v1';
+        let filaments = [];
+        let selectedFilamentId = '';
+
+        function persistFilaments() {
+            localStorage.setItem(filamentStorageKey, JSON.stringify(filaments));
+            localStorage.setItem(filamentSelectedKey, selectedFilamentId);
+        }
+        function currentFilament() {
+            return filaments.find(f => f.id === selectedFilamentId) || filaments[0];
+        }
+        function syncFilamentCost() {
+            const current = currentFilament();
+            document.getElementById('kiloCost').value = current ? current.cost : 0;
+            localStorage.setItem('calc_kiloCost', document.getElementById('kiloCost').value);
+        }
+        function renderFilaments() {
+            const select = document.getElementById('filamentSelect');
+            select.replaceChildren();
+            filaments.forEach(f => {
+                const option = document.createElement('option');
+                option.value = f.id;
+                option.textContent = f.name;
+                select.appendChild(option);
+            });
+            select.value = selectedFilamentId;
+            const rows = document.getElementById('filamentRows');
+            rows.replaceChildren();
+            filaments.forEach(f => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2';
+                const name = document.createElement('input');
+                name.type = 'text'; name.value = f.name; name.placeholder = 'Nombre';
+                name.setAttribute('aria-label', 'Nombre del filamento');
+                name.className = 'min-w-0 flex-1 bg-[#090909] border border-[#303030] rounded-lg px-2 py-2 text-sm text-white';
+                name.addEventListener('input', () => { f.name = name.value; persistFilaments(); const opt = [...select.options].find(o => o.value === f.id); if (opt) opt.textContent = f.name; });
+                const cost = document.createElement('input');
+                cost.type = 'number'; cost.min = '0'; cost.step = 'any'; cost.value = f.cost;
+                cost.setAttribute('aria-label', 'Costo por kilogramo');
+                cost.className = 'w-24 bg-[#090909] border border-[#303030] rounded-lg px-2 py-2 text-sm text-white';
+                cost.addEventListener('input', () => { f.cost = cost.value; persistFilaments(); syncFilamentCost(); calculate(); });
+                const remove = document.createElement('button');
+                remove.type = 'button'; remove.textContent = '×'; remove.title = 'Eliminar filamento';
+                remove.className = 'text-[#d4d4d4] bg-[#252525] rounded-lg px-3 py-2';
+                remove.disabled = filaments.length === 1;
+                remove.addEventListener('click', () => { filaments = filaments.filter(x => x.id !== f.id); if (!filaments.some(x => x.id === selectedFilamentId)) selectedFilamentId = filaments[0].id; persistFilaments(); syncFilamentCost(); renderFilaments(); calculate(); });
+                row.append(name, cost, remove); rows.appendChild(row);
+            });
+        }
+        function addFilament() {
+            const id = 'fil_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+            filaments.push({id, name: 'Nuevo filamento', cost: '300'});
+            persistFilaments(); renderFilaments();
+        }
+        function selectFilament() {
+            selectedFilamentId = document.getElementById('filamentSelect').value;
+            persistFilaments(); syncFilamentCost(); calculate();
+        }
         function loadSavedSettings() {
-            const savedKiloCost = localStorage.getItem('calc_kiloCost');
             const savedPowerCost = localStorage.getItem('calc_powerCost');
             const savedWearCost = localStorage.getItem('calc_wearCost');
-
-            if (savedKiloCost !== null) document.getElementById('kiloCost').value = savedKiloCost;
             if (savedPowerCost !== null) document.getElementById('powerCost').value = savedPowerCost;
             if (savedWearCost !== null) document.getElementById('wearCost').value = savedWearCost;
+            try {
+                const stored = JSON.parse(localStorage.getItem(filamentStorageKey));
+                if (Array.isArray(stored)) filaments = stored.filter(f => f && typeof f.id === 'string' && typeof f.name === 'string' && Number.isFinite(Number(f.cost)) && Number(f.cost) >= 0).map(f => ({id:f.id, name:f.name, cost:String(f.cost)}));
+            } catch (_) {}
+            if (!filaments.length) {
+                const previousCost = localStorage.getItem('calc_kiloCost');
+                filaments = [{id:'pla', name:'PLA', cost:previousCost !== null ? previousCost : '300'}, {id:'petg', name:'PETG', cost:'300'}, {id:'abs', name:'ABS', cost:'300'}, {id:'tpu', name:'TPU', cost:'300'}];
+            }
+            selectedFilamentId = localStorage.getItem(filamentSelectedKey) || filaments[0].id;
+            if (!filaments.some(f => f.id === selectedFilamentId)) selectedFilamentId = filaments[0].id;
+            persistFilaments(); syncFilamentCost(); renderFilaments();
         }
-
-        // Guardar ajustes en LocalStorage y Recalcular
         function saveSettingsAndCalc() {
-            localStorage.setItem('calc_kiloCost', document.getElementById('kiloCost').value);
             localStorage.setItem('calc_powerCost', document.getElementById('powerCost').value);
             localStorage.setItem('calc_wearCost', document.getElementById('wearCost').value);
             calculate();
         }
-
-        // Restablecer valores por defecto
         function restoreDefaultSettings() {
-            document.getElementById('kiloCost').value = 300;
             document.getElementById('powerCost').value = 0.00225;
             document.getElementById('wearCost').value = 3.00;
-            saveSettingsAndCalc();
+            const current = currentFilament();
+            if (current) current.cost = '300';
+            persistFilaments(); syncFilamentCost(); renderFilaments(); saveSettingsAndCalc();
         }
 
         // Abrir/Cerrar Modal de Configuración
