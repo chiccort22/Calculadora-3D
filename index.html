@@ -315,7 +315,8 @@
             const profit = finalPrice - costTotal;
 
             // Actualizar interfaz
-            document.getElementById('txtKiloPrice').innerText = `$${kiloCost}/kg`;
+            const kiloPriceLabel = document.getElementById('txtKiloPrice');
+            if (kiloPriceLabel) kiloPriceLabel.innerText = `$${kiloCost}/kg`;
             document.getElementById('resMaterial').innerText = `$${costMaterial.toFixed(2)} MXN`;
             document.getElementById('resEnergy').innerText = `$${costEnergy.toFixed(2)} MXN`;
             document.getElementById('resWear').innerText = `$${costWear.toFixed(2)} MXN`;
@@ -327,15 +328,15 @@
 
             // Actualizar barra de proporciones
             if (costTotal > 0) {
-                document.getElementById('barMaterial').style.width = `${(costMaterial / costTotal) * 100}%`;
-                document.getElementById('barEnergy').style.width = `${(costEnergy / costTotal) * 100}%`;
-                document.getElementById('barWear').style.width = `${(costWear / costTotal) * 100}%`;
-                document.getElementById('barExtra').style.width = `${(extraCosts / costTotal) * 100}%`;
+                if (document.getElementById('barMaterial')) document.getElementById('barMaterial').style.width = `${(costMaterial / costTotal) * 100}%`;
+                if (document.getElementById('barEnergy')) document.getElementById('barEnergy').style.width = `${(costEnergy / costTotal) * 100}%`;
+                if (document.getElementById('barWear')) document.getElementById('barWear').style.width = `${(costWear / costTotal) * 100}%`;
+                if (document.getElementById('barExtra')) document.getElementById('barExtra').style.width = `${(extraCosts / costTotal) * 100}%`;
             } else {
-                document.getElementById('barMaterial').style.width = '0%';
-                document.getElementById('barEnergy').style.width = '0%';
-                document.getElementById('barWear').style.width = '0%';
-                document.getElementById('barExtra').style.width = '0%';
+                if (document.getElementById('barMaterial')) document.getElementById('barMaterial').style.width = '0%';
+                if (document.getElementById('barEnergy')) document.getElementById('barEnergy').style.width = '0%';
+                if (document.getElementById('barWear')) document.getElementById('barWear').style.width = '0%';
+                if (document.getElementById('barExtra')) document.getElementById('barExtra').style.width = '0%';
             }
         }
 
