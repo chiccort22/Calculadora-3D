@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Calculadora 3D">
@@ -32,20 +32,20 @@
 <body class="min-h-screen pb-12 flex flex-col justify-between">
 
     <!-- Header con botón de engrane de Configuración -->
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-40">
+    <header class="border-b border-[#303030] bg-[#141414]/50 backdrop-blur sticky top-0 z-40">
         <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-white">
+                <div class="bg-[#555555] p-2.5 rounded-xl shadow-lg shadow-[#555555]/30 text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                 </div>
                 <div>
                     <h1 class="text-lg font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Calculadora 3D</h1>
-                    <p class="text-xs text-slate-400">Cotización rápida de impresión</p>
+                    <p class="text-xs text-[#a3a3a3]">Cotización rápida de impresión</p>
                 </div>
             </div>
 
             <!-- Botón Configuración (Engrane) -->
-            <button onclick="toggleSettingsModal()" class="p-2.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-800 text-slate-300 hover:text-white rounded-xl transition-all border border-slate-700 flex items-center gap-2 text-xs font-medium shadow-sm">
+            <button onclick="toggleSettingsModal()" class="p-2.5 bg-[#252525] hover:bg-[#333333] active:bg-[#252525] text-[#d4d4d4] hover:text-white rounded-xl transition-all border border-[#404040] flex items-center gap-2 text-xs font-medium shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin-hover"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                 <span class="hidden sm:inline">Ajustes de Costo</span>
             </button>
@@ -59,37 +59,37 @@
             <!-- Formulario Principal (Solo Variables de la Pieza) -->
             <div class="md:col-span-6 space-y-6">
                 
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
-                    <h2 class="text-sm font-semibold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                <div class="bg-[#141414] border border-[#303030] rounded-2xl p-6 shadow-sm space-y-5">
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-[#dedede] flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
                         Datos del Trabajo
                     </h2>
 
                     <!-- Peso -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Peso de la Pieza</label>
+                        <label class="block text-xs font-medium text-[#a3a3a3] mb-1.5">Peso de la Pieza</label>
                         <div class="relative">
-                            <input type="number" id="weight" value="0" min="0" step="any" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-indigo-500 transition-colors">
-                            <span class="absolute right-3.5 top-3 text-xs font-semibold text-slate-500">g</span>
+                            <input type="number" id="weight" value="0" min="0" step="any" oninput="calculate()" class="w-full bg-[#090909] border border-[#303030] rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
+                            <span class="absolute right-3.5 top-3 text-xs font-semibold text-[#858585]">g</span>
                         </div>
                     </div>
 
                     <!-- Tiempo de Impresión -->
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Horas</label>
-                            <input type="number" id="hours" value="0" min="0" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                            <label class="block text-xs font-medium text-[#a3a3a3] mb-1.5">Horas</label>
+                            <input type="number" id="hours" value="0" min="0" oninput="calculate()" class="w-full bg-[#090909] border border-[#303030] rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Minutos</label>
-                            <input type="number" id="minutes" value="0" min="0" max="59" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                            <label class="block text-xs font-medium text-[#a3a3a3] mb-1.5">Minutos</label>
+                            <input type="number" id="minutes" value="0" min="0" max="59" oninput="calculate()" class="w-full bg-[#090909] border border-[#303030] rounded-xl px-3.5 py-2.5 text-base font-medium text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
                         </div>
                     </div>
 
                     <!-- Multiplicador / Margen -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Margen de ganancia</label>
-                        <select id="multiplier" onchange="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        <label class="block text-xs font-medium text-[#a3a3a3] mb-1.5">Margen de ganancia</label>
+                        <select id="multiplier" onchange="calculate()" class="w-full bg-[#090909] border border-[#303030] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
                             <option value="2">2x</option>
                             <option value="3" selected>3x</option>
                             <option value="4">4x</option>
@@ -99,19 +99,19 @@
 
                     <!-- Margen Personalizado (%) -->
                     <div id="customMarginGroup" class="hidden">
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Margen de Ganancia (%)</label>
+                        <label class="block text-xs font-medium text-[#a3a3a3] mb-1.5">Margen de Ganancia (%)</label>
                         <div class="relative">
-                            <input type="number" id="customMargin" value="200" step="10" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
-                            <span class="absolute right-3.5 top-3 text-xs text-slate-500">%</span>
+                            <input type="number" id="customMargin" value="200" step="10" oninput="calculate()" class="w-full bg-[#090909] border border-[#303030] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
+                            <span class="absolute right-3.5 top-3 text-xs text-[#858585]">%</span>
                         </div>
                     </div>
 
                     <!-- Costos Adicionales / Extras -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Costos Extras</label>
+                        <label class="block text-xs font-medium text-[#a3a3a3] mb-1.5">Costos Extras</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-2.5 text-slate-500">$</span>
-                            <input type="number" id="extraCosts" value="0" step="any" placeholder="0.00" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                            <span class="absolute left-3.5 top-2.5 text-[#858585]">$</span>
+                            <input type="number" id="extraCosts" value="0" step="any" placeholder="0.00" oninput="calculate()" class="w-full bg-[#090909] border border-[#303030] rounded-xl pl-8 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
                         </div>
                     </div>
 
@@ -122,41 +122,41 @@
             <!-- Panel de Resultados -->
             <div class="md:col-span-6 space-y-6">
                 
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl sticky top-24">
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-5">Resultados de Cotización</h3>
+                <div class="bg-[#141414] border border-[#303030] rounded-2xl p-6 shadow-xl sticky top-24">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-[#a3a3a3] mb-5">Resultados de Cotización</h3>
                     
                     <!-- Desglose Sencillo -->
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-400 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                            <span class="text-[#a3a3a3] flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#888888]"></span>
                                 Material</span>
                             </span>
                             <span id="resMaterial" class="font-semibold">$0.00 MXN</span>
                         </div>
                         <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-400 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                            <span class="text-[#a3a3a3] flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#aaaaaa]"></span>
                                 Luz Electrica
                             </span>
                             <span id="resEnergy" class="font-semibold">$0.00 MXN</span>
                         </div>
                         <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-400 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                            <span class="text-[#a3a3a3] flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#666666]"></span>
                                 Desgaste de Impresora
                             </span>
                             <span id="resWear" class="font-semibold">$0.00 MXN</span>
                         </div>
                         <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-400 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span class="text-[#a3a3a3] flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#444444]"></span>
                                 Extras
                             </span>
                             <span id="resExtra" class="font-semibold">$0.00 MXN</span>
                         </div>
                         
-                        <div class="border-t border-slate-800 pt-3 mt-3 flex justify-between items-center">
+                        <div class="border-t border-[#303030] pt-3 mt-3 flex justify-between items-center">
                             <span class="font-medium text-slate-200 text-sm">Costo Total de Producción</span>
                             <span id="resTotalCost" class="text-base font-bold text-slate-100">$0.00 MXN</span>
                         </div>
@@ -164,64 +164,64 @@
 
 
                     <!-- Cuadro Destacado: Precio Sugerido de Venta -->
-                    <div class="bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-4 text-center mb-6">
-                        <span class="text-xs uppercase tracking-widest text-indigo-300 font-semibold block mb-1">Precio de Venta</span>
-                        <div id="resFinalPrice" class="text-3xl font-extrabold text-indigo-400">$0.00 MXN</div>
-                        <span id="resProfit" class="text-xs text-emerald-400 font-medium block mt-1.5">Ganancia: $0.00 MXN</span>
+                    <div class="bg-[#202020] border border-[#555555] rounded-xl p-4 text-center mb-6">
+                        <span class="text-xs uppercase tracking-widest text-[#d4d4d4] font-semibold block mb-1">Precio de Venta</span>
+                        <div id="resFinalPrice" class="text-3xl font-extrabold text-[#dedede]">$0.00 MXN</div>
+                        <span id="resProfit" class="text-xs text-[#bdbdbd] font-medium block mt-1.5">Ganancia: $0.00 MXN</span>
                     </div>
         </div>
     </main>
 
     <!-- Modal de Configuración Parámetros Fijos -->
-    <div id="settingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-6 transform scale-95 transition-transform duration-200" id="settingsModalContent">
+    <div id="settingsModal" class="fixed inset-0 bg-[#090909]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-[#141414] border border-[#303030] w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-6 transform scale-95 transition-transform duration-200" id="settingsModalContent">
             
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div class="flex items-center justify-between border-b border-[#303030] pb-4">
                 <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#dedede]"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                     <h3 class="text-base font-bold text-white">Ajustes de Parámetros Fijos</h3>
                 </div>
-                <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                <button onclick="toggleSettingsModal()" class="text-[#a3a3a3] hover:text-white p-1 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
 
-            <p class="text-xs text-slate-400">Estos parámetros se guardan automáticamente en tu navegador y se aplicarán a todas tus cotizaciones futuras.</p>
+            <p class="text-xs text-[#a3a3a3]">Estos parámetros se guardan automáticamente en tu navegador y se aplicarán a todas tus cotizaciones futuras.</p>
 
             <div class="space-y-4">
                 <!-- Costo Filamento por Kilo -->
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Costo Filamento / Kilo ($ MXN)</label>
+                    <label class="block text-xs font-medium text-[#d4d4d4] mb-1">Costo Filamento / Kilo ($ MXN)</label>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-2.5 text-slate-500">$</span>
-                        <input type="number" id="kiloCost" value="300" step="any" oninput="saveSettingsAndCalc()" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        <span class="absolute left-3.5 top-2.5 text-[#858585]">$</span>
+                        <input type="number" id="kiloCost" value="300" step="any" oninput="saveSettingsAndCalc()" class="w-full bg-[#090909] border border-[#303030] rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
                     </div>
                 </div>
 
                 <!-- Costo de Luz por Minuto -->
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Costo Luz por Minuto ($ MXN)</label>
+                    <label class="block text-xs font-medium text-[#d4d4d4] mb-1">Costo Luz por Minuto ($ MXN)</label>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-2.5 text-slate-500">$</span>
-                        <input type="number" id="powerCost" value="0.00225" step="0.00001" oninput="saveSettingsAndCalc()" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        <span class="absolute left-3.5 top-2.5 text-[#858585]">$</span>
+                        <input type="number" id="powerCost" value="0.00225" step="0.00001" oninput="saveSettingsAndCalc()" class="w-full bg-[#090909] border border-[#303030] rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
                     </div>
                 </div>
 
                 <!-- Costo Mantenimiento por Hora -->
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Desgaste / Mantenimiento por Hora ($ MXN)</label>
+                    <label class="block text-xs font-medium text-[#d4d4d4] mb-1">Desgaste / Mantenimiento por Hora ($ MXN)</label>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-2.5 text-slate-500">$</span>
-                        <input type="number" id="wearCost" value="3.00" step="any" oninput="saveSettingsAndCalc()" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        <span class="absolute left-3.5 top-2.5 text-[#858585]">$</span>
+                        <input type="number" id="wearCost" value="3.00" step="any" oninput="saveSettingsAndCalc()" class="w-full bg-[#090909] border border-[#303030] rounded-xl pl-8 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#a3a3a3] transition-colors">
                     </div>
                 </div>
             </div>
 
-            <div class="pt-2 flex items-center justify-between gap-3 border-t border-slate-800">
-                <button onclick="restoreDefaultSettings()" class="text-xs text-slate-400 hover:text-slate-200 underline">
+            <div class="pt-2 flex items-center justify-between gap-3 border-t border-[#303030]">
+                <button onclick="restoreDefaultSettings()" class="text-xs text-[#a3a3a3] hover:text-slate-200 underline">
                     Valores por defecto
                 </button>
-                <button onclick="toggleSettingsModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 px-5 rounded-xl text-xs transition-colors">
+                <button onclick="toggleSettingsModal()" class="bg-[#555555] hover:bg-[#707070] text-white font-medium py-2 px-5 rounded-xl text-xs transition-colors">
                     Listo
                 </button>
             </div>
@@ -364,13 +364,13 @@
             const btn = document.getElementById('copyBtn');
             const originalText = btn.innerHTML;
             btn.innerHTML = `✓ Copiado al Portapapeles`;
-            btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
-            btn.classList.add('bg-emerald-600');
+            btn.classList.remove('bg-[#555555]', 'hover:bg-[#707070]');
+            btn.classList.add('bg-[#666666]');
 
             setTimeout(() => {
                 btn.innerHTML = originalText;
-                btn.classList.remove('bg-emerald-600');
-                btn.classList.add('bg-indigo-600', 'hover:bg-indigo-500');
+                btn.classList.remove('bg-[#666666]');
+                btn.classList.add('bg-[#555555]', 'hover:bg-[#707070]');
             }, 2000);
         }
 
