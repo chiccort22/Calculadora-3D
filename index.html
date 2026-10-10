@@ -27,6 +27,31 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+        .history-icon, .quote-button { background:#292929; color:#ededed; border:1px solid #444; border-radius:12px; padding:10px 14px; font-size:14px; cursor:pointer; }
+        .history-icon { padding:10px; }
+        .quote-button:hover, .history-icon:hover { background:#383838; }
+        .quote-button.primary { background:#dedede; color:#111; font-weight:600; }
+        .quote-button.danger { color:#fca5a5; }
+        .quote-button:disabled { opacity:.5; cursor:default; }
+        .quote-button:focus-visible, .history-icon:focus-visible { outline:2px solid #eee; outline-offset:3px; }
+        .quote-overlay { position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom)); }
+        .quote-overlay[hidden], [hidden].quote-original { display:none; }
+        .quote-panel { width:100%; max-width:560px; max-height:100%; overflow:auto; background:#141414; border:1px solid #333; border-radius:20px; padding:24px; color:#f5f5f5; }
+        .quote-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+        .quote-heading h2 { font-size:18px; font-weight:700; }
+        .quote-field { display:block; width:100%; background:#090909; border:1px solid #393939; border-radius:12px; padding:12px; margin:6px 0 16px; color:#fff; font-size:16px; }
+        .quote-field:focus { outline:1px solid #aaa; }
+        .quote-label, .quote-muted { font-size:13px; color:#aaa; }
+        .quote-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+        .quote-card { border:1px solid #303030; border-radius:14px; padding:16px; margin-top:12px; }
+        .quote-card h3 { font-weight:600; overflow-wrap:anywhere; }
+        .quote-card p { overflow-wrap:anywhere; }
+        .quote-price { font-size:20px; font-weight:700; margin-top:10px; }
+        .quote-details { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; margin:20px 0; font-size:14px; }
+        .quote-details dt { color:#aaa; }
+        .quote-details dd { text-align:right; overflow-wrap:anywhere; }
+        .quote-original { background:#202020; border:1px solid #444; border-radius:12px; padding:12px; margin-bottom:16px; }
+        #quoteStatus { min-height:18px; margin-top:8px; }
     </style>
 </head>
 <body class="min-h-screen pb-12 flex flex-col justify-between">
@@ -44,11 +69,16 @@
                 </div>
             </div>
 
+            <div class="flex items-center gap-2">
+            <button type="button" onclick="openQuoteHistory()" title="Historial de cotizaciones" aria-label="Historial de cotizaciones" class="history-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.7-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+            </button>
             <!-- Botón Configuración (Engrane) -->
             <button onclick="toggleSettingsModal()" class="p-2.5 bg-[#252525] hover:bg-[#333333] active:bg-[#252525] text-[#d4d4d4] hover:text-white rounded-xl transition-all border border-[#404040] flex items-center gap-2 text-xs font-medium shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin-hover"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                 <span class="hidden sm:inline">Ajustes de Costo</span>
             </button>
+            </div>
         </div>
     </header>
 
@@ -169,18 +199,26 @@
                     </div>
 
 
+                    <div id="quoteOriginalBanner" class="quote-original" hidden>
+                        <p id="quoteOriginalLabel" class="quote-muted"></p>
+                        <button type="button" onclick="useCurrentQuoteRates()" class="quote-button" style="margin-top:8px">Usar costos actuales</button>
+                    </div>
                     <!-- Cuadro Destacado: Precio Sugerido de Venta -->
                     <div class="bg-[#202020] border border-[#555555] rounded-xl p-4 text-center mb-6">
                         <span class="text-xs uppercase tracking-widest text-[#d4d4d4] font-semibold block mb-1">Precio de Venta</span>
                         <div id="resFinalPrice" class="text-3xl font-extrabold text-[#dedede]">$0.00 MXN</div>
                         <span id="resProfit" class="text-xs text-[#bdbdbd] font-medium block mt-1.5">Ganancia: $0.00 MXN</span>
                     </div>
+                    <button type="button" onclick="openSaveQuote()" class="quote-button primary" style="width:100%">Guardar cotización</button>
+                    <p id="quoteStatus" class="quote-muted" role="status" aria-live="polite"></p>
+                </div>
+            </div>
         </div>
     </main>
 
     <!-- Modal de Configuración Parámetros Fijos -->
     <div id="settingsModal" class="fixed inset-0 bg-[#090909]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-        <div class="bg-[#141414] border border-[#303030] w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-6 transform scale-95 transition-transform duration-200" id="settingsModalContent">
+        <div class="bg-[#141414] border border-[#303030] w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-6 transform scale-95 transition-transform duration-200" style="max-height:calc(100dvh - 32px);overflow-y:auto" id="settingsModalContent">
             
             <div class="flex items-center justify-between border-b border-[#303030] pb-4">
                 <div class="flex items-center gap-2">
@@ -234,8 +272,226 @@
         </div>
     </div>
 
+    <div id="quoteSaveModal" class="quote-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="quoteSaveTitle">
+        <form class="quote-panel" onsubmit="saveQuote(event)">
+            <div class="quote-heading"><h2 id="quoteSaveTitle">Guardar cotización</h2><button type="button" class="quote-button" onclick="closeQuoteModal()" aria-label="Cerrar">✕</button></div>
+            <label class="quote-label" for="quoteName">Nombre de la pieza</label>
+            <input id="quoteName" class="quote-field" required maxlength="120" placeholder="Ej. Soporte para celular" autocomplete="off">
+            <label class="quote-label" for="quoteClient">Cliente (opcional)</label>
+            <input id="quoteClient" class="quote-field" maxlength="120" autocomplete="off">
+            <p id="quoteSaveError" class="quote-muted" role="alert"></p>
+            <div class="quote-actions"><button type="submit" class="quote-button primary">Guardar</button><button type="button" class="quote-button" onclick="closeQuoteModal()">Cancelar</button></div>
+        </form>
+    </div>
+    <div id="quoteHistoryModal" class="quote-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="quoteHistoryTitle">
+        <div class="quote-panel">
+            <div class="quote-heading"><h2 id="quoteHistoryTitle">Historial de cotizaciones</h2><button type="button" class="quote-button" onclick="closeQuoteModal()" aria-label="Cerrar">✕</button></div>
+            <label class="quote-label" for="quoteSearch">Buscar pieza o cliente</label>
+            <input id="quoteSearch" class="quote-field" type="search" oninput="renderQuoteHistory()" placeholder="Buscar cotización…">
+            <div id="quoteList"></div>
+        </div>
+    </div>
+    <div id="quoteDetailModal" class="quote-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="quoteDetailTitle">
+        <div class="quote-panel">
+            <div class="quote-heading"><h2 id="quoteDetailTitle">Detalle de cotización</h2><button type="button" class="quote-button" onclick="closeQuoteModal()" aria-label="Cerrar">✕</button></div>
+            <div id="quoteDetailContent"></div>
+            <div class="quote-actions"><button id="quoteRecoverButton" type="button" class="quote-button primary">Recuperar cotización</button><button type="button" class="quote-button" onclick="openQuoteHistory()">Volver al historial</button></div>
+        </div>
+    </div>
+
     <!-- JavaScript para Lógica, Manejo del Modal y LocalStorage -->
     <script>
+        const quoteHistoryKey = 'calc_quoteHistory_v1';
+        let currentQuoteSnapshot = null;
+        let pendingQuoteSnapshot = null;
+        let originalQuoteRates = null;
+        let originalQuoteFilament = null;
+        let quoteFocusReturn = null;
+        let quotePreviousOverflow = '';
+        const quoteMoney = value => '$' + Number(value).toFixed(2) + ' MXN';
+        const quoteDate = value => new Date(value).toLocaleString('es-MX', { dateStyle:'medium', timeStyle:'short' });
+        function validQuote(q) {
+            return q && typeof q.id === 'string' && typeof q.name === 'string' && typeof q.client === 'string' && Number.isFinite(Date.parse(q.date)) &&
+                (!q.filament || (typeof q.filament.id === 'string' && typeof q.filament.name === 'string')) && q.inputs && ['weight','hours','minutes','extraCosts','customMargin'].every(k => Number.isFinite(Number(q.inputs[k]))) &&
+                ['2','3','4','custom'].includes(q.inputs.multiplier) && q.rates && ['kiloCost','powerCost','wearCost'].every(k => typeof q.rates[k] === 'number' && Number.isFinite(q.rates[k])) &&
+                q.results && ['costMaterial','costEnergy','costWear','extraCosts','costTotal','finalPrice','profit'].every(k => typeof q.results[k] === 'number' && Number.isFinite(q.results[k]));
+        }
+        function readQuoteHistory() {
+            const raw = localStorage.getItem(quoteHistoryKey);
+            if (raw === null) return [];
+            const data = JSON.parse(raw);
+            if (!Array.isArray(data) || !data.every(validQuote)) throw new Error('Historial no válido');
+            return data;
+        }
+        function showQuoteModal(id, focusId) {
+            const alreadyOpen = Array.from(document.querySelectorAll('.quote-overlay')).some(el => !el.hidden);
+            if (!alreadyOpen) {
+                quoteFocusReturn = document.activeElement;
+                quotePreviousOverflow = document.body.style.overflow;
+            }
+            document.querySelectorAll('.quote-overlay').forEach(el => { el.hidden = el.id !== id; });
+            document.body.style.overflow = 'hidden';
+            document.getElementById(focusId).focus();
+        }
+        function closeQuoteModal() {
+            document.querySelectorAll('.quote-overlay').forEach(el => { el.hidden = true; });
+            document.body.style.overflow = quotePreviousOverflow;
+            if (quoteFocusReturn && quoteFocusReturn.isConnected) quoteFocusReturn.focus();
+        }
+        function openSaveQuote() {
+            calculate();
+            pendingQuoteSnapshot = JSON.parse(JSON.stringify(currentQuoteSnapshot));
+            document.getElementById('quoteName').value = '';
+            document.getElementById('quoteClient').value = '';
+            document.getElementById('quoteSaveError').textContent = '';
+            showQuoteModal('quoteSaveModal', 'quoteName');
+        }
+        function saveQuote(event) {
+            event.preventDefault();
+            const name = document.getElementById('quoteName').value.trim();
+            if (!name) {
+                document.getElementById('quoteSaveError').textContent = 'Escribe el nombre de la pieza.';
+                document.getElementById('quoteName').focus();
+                return;
+            }
+            const record = {
+                ...pendingQuoteSnapshot,
+                id: window.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2),
+                name, client: document.getElementById('quoteClient').value.trim(), date:new Date().toISOString()
+            };
+            if (!validQuote(record)) {
+                document.getElementById('quoteSaveError').textContent = 'Revisa los datos de la cotización.';
+                return;
+            }
+            try {
+                const history = readQuoteHistory();
+                history.unshift(record);
+                localStorage.setItem(quoteHistoryKey, JSON.stringify(history));
+            } catch (error) {
+                document.getElementById('quoteSaveError').textContent = 'No se pudo guardar. Revisa el almacenamiento disponible o el acceso a los datos de este navegador. El historial existente se conserva.';
+                return;
+            }
+            closeQuoteModal();
+            document.getElementById('quoteStatus').textContent = 'Cotización guardada: ' + name;
+        }
+        function quoteText(tag, text, className) {
+            const el = document.createElement(tag);
+            el.textContent = text;
+            if (className) el.className = className;
+            return el;
+        }
+        function quoteAction(label, handler, className='') {
+            const el = quoteText('button',label,'quote-button ' + className);
+            el.type = 'button';
+            el.addEventListener('click',handler);
+            return el;
+        }
+        function openQuoteHistory() {
+            document.getElementById('quoteSearch').value = '';
+            renderQuoteHistory();
+            showQuoteModal('quoteHistoryModal', 'quoteSearch');
+        }
+        function renderQuoteHistory() {
+            const list = document.getElementById('quoteList');
+            list.replaceChildren();
+            let history;
+            try { history = readQuoteHistory(); }
+            catch(error) { list.append(quoteText('p','No se pudo leer el historial. Los datos existentes no se han modificado.','quote-muted')); return; }
+            const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es');
+            const search = normalize(document.getElementById('quoteSearch').value.trim());
+            const filtered = history.filter(q => normalize(q.name + ' ' + q.client).includes(search));
+            if (!filtered.length) {
+                list.append(quoteText('p',history.length ? 'No hay coincidencias.' : 'Aún no hay cotizaciones guardadas.','quote-muted'));
+                return;
+            }
+            filtered.forEach(q => {
+                const card = quoteText('article','','quote-card');
+                card.append(quoteText('h3',q.name),quoteText('p',quoteDate(q.date),'quote-muted'));
+                if (q.client) card.append(quoteText('p','Cliente: ' + q.client,'quote-muted'));
+                card.append(quoteText('p',quoteMoney(q.results.finalPrice),'quote-price'));
+                const actions = quoteText('div','','quote-actions');
+                actions.append(quoteAction('Ver detalle',() => showQuoteDetail(q.id)),quoteAction('Eliminar',() => deleteQuote(q.id),'danger'));
+                card.append(actions);
+                list.append(card);
+            });
+        }
+        function showQuoteDetail(id) {
+            let q;
+            try { q = readQuoteHistory().find(q => q.id === id); }
+            catch(error) { alert('No se pudo leer el historial.'); return; }
+            if (!q) { renderQuoteHistory(); return; }
+            const content = document.getElementById('quoteDetailContent');
+            content.replaceChildren(quoteText('h3',q.name,'quote-price'),quoteText('p',quoteDate(q.date),'quote-muted'));
+            if (q.client) content.append(quoteText('p','Cliente: ' + q.client,'quote-muted'));
+            const dl = document.createElement('dl');
+            dl.className = 'quote-details';
+            const rows = [
+                ['Filamento', q.filament ? q.filament.name : 'No registrado'],
+                ['Peso',q.inputs.weight + ' g'],['Tiempo',q.inputs.hours + ' h ' + q.inputs.minutes + ' min'],
+                ['Costo por kilo',quoteMoney(q.rates.kiloCost)],['Luz por minuto',q.rates.powerCost + ' MXN'],['Desgaste por hora',quoteMoney(q.rates.wearCost)],
+                ['Margen',q.inputs.multiplier === 'custom' ? q.inputs.customMargin + ' %' : q.inputs.multiplier + 'x'],
+                ['Material',quoteMoney(q.results.costMaterial)],['Luz',quoteMoney(q.results.costEnergy)],['Desgaste',quoteMoney(q.results.costWear)],
+                ['Extras',quoteMoney(q.results.extraCosts)],['Costo de producción',quoteMoney(q.results.costTotal)],['Precio de venta',quoteMoney(q.results.finalPrice)],['Ganancia estimada',quoteMoney(q.results.profit)]
+            ];
+            rows.forEach(([label,value]) => dl.append(quoteText('dt',label),quoteText('dd',value)));
+            content.append(dl,quoteText('p','Al recuperar se usarán los costos originales. Puedes cambiar a los costos actuales desde la calculadora.','quote-muted'));
+            document.getElementById('quoteRecoverButton').onclick = () => recoverQuote(id);
+            showQuoteModal('quoteDetailModal','quoteRecoverButton');
+        }
+        function recoverQuote(id) {
+            let q;
+            try { q = readQuoteHistory().find(q => q.id === id); }
+            catch(error) { alert('No se pudo recuperar la cotización.'); return; }
+            if (!q) return;
+            Object.entries(q.inputs).forEach(([key,value]) => { const el = document.getElementById(key); if (el) el.value = value; });
+            originalQuoteRates = {...q.rates};
+            originalQuoteFilament = q.filament ? {...q.filament} : {id:'',name:'Filamento de cotización anterior'};
+            renderFilaments();
+            document.getElementById('quoteOriginalBanner').hidden = false;
+            document.getElementById('quoteOriginalLabel').textContent = 'Costos originales · ' + q.name + ' · ' + quoteDate(q.date);
+            calculate();
+            closeQuoteModal();
+            document.getElementById('quoteStatus').textContent = 'Cotización recuperada. Los ajustes actuales se conservan.';
+            window.scrollTo({top:0,behavior:'smooth'});
+        }
+        function useCurrentQuoteRates() {
+            if (originalQuoteFilament) {
+                const found = filaments.find(f => f.id === originalQuoteFilament.id);
+                if (!found) {
+                    alert('Este filamento ya no está en el catálogo. Selecciona un filamento actual en la pantalla principal para recalcular.');
+                    return;
+                }
+                selectedFilamentId = found.id;
+            }
+            originalQuoteRates = null;
+            originalQuoteFilament = null;
+            persistFilaments(); syncFilamentCost(); renderFilaments();
+            document.getElementById('quoteOriginalBanner').hidden = true;
+            calculate();
+            document.getElementById('quoteStatus').textContent = 'Cálculo actualizado con los costos actuales.';
+        }
+        function deleteQuote(id) {
+            try {
+                const history = readQuoteHistory();
+                const q = history.find(q => q.id === id);
+                if (!q || !confirm('¿Eliminar la cotización «' + q.name + '»?')) return;
+                localStorage.setItem(quoteHistoryKey,JSON.stringify(history.filter(q => q.id !== id)));
+                renderQuoteHistory();
+            } catch(error) { alert('No se pudo eliminar. El historial existente se conserva.'); }
+        }
+        document.querySelectorAll('.quote-overlay').forEach(el => el.addEventListener('click',event => { if (event.target === el) closeQuoteModal(); }));
+        document.addEventListener('keydown',event => {
+            const modal = Array.from(document.querySelectorAll('.quote-overlay')).find(el => !el.hidden);
+            if (!modal) return;
+            if (event.key === 'Escape') { event.preventDefault(); closeQuoteModal(); }
+            if (event.key === 'Tab') {
+                const targets = Array.from(modal.querySelectorAll('button,input')).filter(el => !el.disabled && el.getClientRects().length);
+                const first = targets[0], last = targets[targets.length-1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+            }
+        });
+
         // Cargar ajustes desde LocalStorage o usar defaults
         const filamentStorageKey = 'calc_filaments_v1';
         const filamentSelectedKey = 'calc_selectedFilament_v1';
@@ -263,7 +519,13 @@
                 option.textContent = f.name;
                 select.appendChild(option);
             });
-            select.value = selectedFilamentId;
+            if (originalQuoteFilament) {
+                const option = document.createElement('option');
+                option.value = '__quote_original__';
+                option.textContent = originalQuoteFilament.name + ' · cotización original';
+                select.appendChild(option);
+            }
+            select.value = originalQuoteFilament ? '__quote_original__' : selectedFilamentId;
             const rows = document.getElementById('filamentRows');
             rows.replaceChildren();
             filaments.forEach(f => {
@@ -293,8 +555,14 @@
             persistFilaments(); renderFilaments();
         }
         function selectFilament() {
-            selectedFilamentId = document.getElementById('filamentSelect').value;
-            persistFilaments(); syncFilamentCost(); calculate();
+            const selected = document.getElementById('filamentSelect').value;
+            if (selected === '__quote_original__') return;
+            originalQuoteRates = null;
+            originalQuoteFilament = null;
+            document.getElementById('quoteOriginalBanner').hidden = true;
+            document.getElementById('quoteStatus').textContent = 'Cálculo actualizado con el filamento y los costos actuales.';
+            selectedFilamentId = selected;
+            persistFilaments(); syncFilamentCost(); renderFilaments(); calculate();
         }
         function loadSavedSettings() {
             const savedPowerCost = localStorage.getItem('calc_powerCost');
@@ -344,7 +612,7 @@
 
         // Función Principal de Cálculo
         function calculate() {
-            const kiloCost = parseFloat(document.getElementById('kiloCost').value) || 0;
+            const kiloCost = originalQuoteRates ? originalQuoteRates.kiloCost : (parseFloat(document.getElementById('kiloCost').value) || 0);
             const weight = parseFloat(document.getElementById('weight').value) || 0;
             
             const hours = parseFloat(document.getElementById('hours').value) || 0;
@@ -352,8 +620,8 @@
             const totalMinutes = (hours * 60) + minutes;
             const totalHours = totalMinutes / 60;
 
-            const powerCostPerMin = parseFloat(document.getElementById('powerCost').value) || 0;
-            const wearCostPerHour = parseFloat(document.getElementById('wearCost').value) || 0;
+            const powerCostPerMin = originalQuoteRates ? originalQuoteRates.powerCost : (parseFloat(document.getElementById('powerCost').value) || 0);
+            const wearCostPerHour = originalQuoteRates ? originalQuoteRates.wearCost : (parseFloat(document.getElementById('wearCost').value) || 0);
             const extraCosts = parseFloat(document.getElementById('extraCosts').value) || 0;
 
             const multiplierSelect = document.getElementById('multiplier').value;
@@ -394,18 +662,17 @@
             document.getElementById('resFinalPrice').innerText = `$${finalPrice.toFixed(2)} MXN`;
             document.getElementById('resProfit').innerText = `Ganancia estimada: $${profit.toFixed(2)} MXN`;
 
-            // Actualizar barra de proporciones
-            if (costTotal > 0) {
-                if (document.getElementById('barMaterial')) document.getElementById('barMaterial').style.width = `${(costMaterial / costTotal) * 100}%`;
-                if (document.getElementById('barEnergy')) document.getElementById('barEnergy').style.width = `${(costEnergy / costTotal) * 100}%`;
-                if (document.getElementById('barWear')) document.getElementById('barWear').style.width = `${(costWear / costTotal) * 100}%`;
-                if (document.getElementById('barExtra')) document.getElementById('barExtra').style.width = `${(extraCosts / costTotal) * 100}%`;
-            } else {
-                if (document.getElementById('barMaterial')) document.getElementById('barMaterial').style.width = '0%';
-                if (document.getElementById('barEnergy')) document.getElementById('barEnergy').style.width = '0%';
-                if (document.getElementById('barWear')) document.getElementById('barWear').style.width = '0%';
-                if (document.getElementById('barExtra')) document.getElementById('barExtra').style.width = '0%';
-            }
+            currentQuoteSnapshot = {
+                inputs: Object.fromEntries(['weight','hours','minutes','extraCosts','multiplier','customMargin'].map(id => [id, document.getElementById(id).value])),
+                filament: originalQuoteFilament ? {...originalQuoteFilament} : {id:currentFilament().id, name:currentFilament().name},
+                rates: { kiloCost, powerCost: powerCostPerMin, wearCost: wearCostPerHour },
+                results: { costMaterial, costEnergy, costWear, extraCosts, costTotal, finalPrice, profit }
+            };
+            // Algunas versiones no incluyen la barra de proporciones.
+            [['barMaterial',costMaterial],['barEnergy',costEnergy],['barWear',costWear],['barExtra',extraCosts]].forEach(([id,cost]) => {
+                const bar = document.getElementById(id);
+                if (bar) bar.style.width = `${costTotal > 0 ? cost / costTotal * 100 : 0}%`;
+            });
         }
 
         // Copiar resumen de cotización al portapapeles
